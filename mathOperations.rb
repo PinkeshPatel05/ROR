@@ -34,7 +34,6 @@ if(abc1==abc2)
 end
 
 #De Morgan Law
-#The operation of an OR and AND logic circuit will remain same if we invert all the inputs, change operators from AND to OR and OR to AND, and invert the output.
 #(A+B)' = A'.B'
 lhs = U - aORb
 
