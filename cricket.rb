@@ -8,12 +8,20 @@ typeOfMatch=""
 ballsForT20 = 6
 ballsForOthers = 12
 @totalOvers = 0
-@firstTemaScire = 0
-# firstTotal = 0
 @fTotal = 0
 @bawllingEconomy
 @playerName
 @playerRuns
+@striker
+@nonStriker
+# $playerWiseDetail = []
+@currentlyPlaying1
+@currentlyPlaying2
+@currentlyPlaying = "A"
+@p1=0
+@p2=0
+# customerArr= []
+$playerWiseDetail = []
 
 def self.played(t1,t2,noOfBalls)
 	o1 = [1, 4, 4, 2, 6, nil] 
@@ -21,26 +29,39 @@ def self.played(t1,t2,noOfBalls)
 	@total = 0
 	n = 0
 	m = 1
+	@p1 = 0
+	@p2 = 0
 
 	balls = 0
 	oversFinished = 0
 	
 	players = t1[n..m]
+	@striker = players[0]
+	@nonStriker = players[1]
 	noOfBalls.times do |i|
 		players.each do |a|
-
+		a= @striker
 		  ball = o1.shuffle.first
 		  outBy = outByArr.shuffle.first
 		  if ball == nil
 		    puts "#{a} gets out - "  "#{outBy}"
 		    t1.delete(a)
-			
+			# playerDetail = {
+			# 	a => @p1
+			# }
+			# $userWiseDetail.push(playerDetail)
+			saveScore(a,@p1)
+			player_out
+			check_striker(ball,balls)
 			puts "Choose next player for batting: "
 			nextPlayer = gets.chomp
 			t1 = t1.insert(1, t1.delete_at( t1.index(nextPlayer) ))
 			
 		    puts "Players remaining are #{t1.count}"
 		    players = t1[n..m]
+			a =  players[0]
+			@striker = a
+			@nonStriker = players[1]
 			  puts "Innings end \n\n\n" if t1 == []
 			  puts "Total runs scored #{@total} \n\n" if t1 == []
 		  	puts "New player came to bat #{players}" if players && players.any?
@@ -48,9 +69,14 @@ def self.played(t1,t2,noOfBalls)
 		  else
 		    puts "#{a} hits a #{ball} runs"
 		    @total = @total + ball
+			add_runs(ball) 
+			saveScore(a,@p1) if i == noOfBalls
+			saveScore(a,@p2) if i == noOfBalls
 		    abort("Innings ended with total runs of #{@total}") if i == noOfBalls
 		  end
 		  balls = balls + 1
+		  
+		  check_striker(ball,balls) if ball != nil
 		  puts "Total runs after this over #{@total} \n\n" if balls % 6 == 0 
 		  
 		  if( balls % 6 == 0 )
@@ -74,11 +100,56 @@ end
 #Bowling economy
 def self.calcBowlingEconomy(runs, noOfOvers)
 	@bawllingEconomy = runs/noOfOvers
-	# return @bawllingEconomy
 end
 
 def self.change_striker
-	@striker, @non_striker = @non_striker, @striker
+	# puts "--stiker before----#{@striker}"
+	# puts "--nonstiker before----#{@nonStriker}"
+	@striker, @nonStriker = @nonStriker, @striker
+	if @currentlyPlaying == "A"
+		@currentlyPlaying = "B"
+	else
+		@currentlyPlaying = "A"
+	end
+	# puts "--stiker after----#{@striker}"
+	# puts "--nonstiker after----#{@nonStriker}"
+end
+
+def self.check_striker(runs,balls)
+	# puts "--runs----#{runs}"
+	# puts "--balls----#{balls}"
+	if(runs==nil)
+		@currentlyPlaying = "A"
+	elsif (runs.odd?) && (balls % 6 != 0)
+		change_striker
+	elsif ((runs.even?) || (runs == 0)) && (balls % 6 == 0)
+		change_striker
+	end
+end
+
+def self.add_runs(runs)
+	if @currentlyPlaying == "A"
+    	@p1 += runs
+		# puts "---p1 runs #{@p1}"
+	else 
+		@p2 += runs
+		# puts "---p2 runs #{@p2}"
+	end
+end
+
+def self.saveScore(a,runs)
+	playerDetail = {
+		a => runs
+	}
+	$playerWiseDetail.push(playerDetail)
+end
+
+def self.player_out
+	if @currentlyPlaying == "A"
+    	@p1 = 0
+	else 
+		@p2 = 0
+	end
 end
 
 puts "Teams are India and Australia \n\n "
@@ -116,6 +187,8 @@ if coin.shuffle.first == 'Heads'
 	@fTotal = @total
 	puts "Total runs by India #{firstTotal}"
 	# sleep 2
+	# @p1 = 0
+	# @p2 = 0
 	puts "\nNow Australia will come to bat"
 	played(t2,t1,noOfBalls)
 	secondTotal = @total
@@ -133,15 +206,19 @@ else
 	@total =  @total
 	@fTotal = @total
 	puts "Total runs by Australia #{firstTotal}"
-	sleep 2
+	# sleep 2
+	# @p1 = 0
+	# @p2 = 0
 	puts "\nNow India will come to bat"
 	played(t1,t2,noOfBalls)
 	secondTotal = @total
 	puts "Total runs by Australia #{secondTotal}"
 	if firstTotal > secondTotal
 		puts "Australia won the match by #{firstTotal - secondTotal} runs"
+		puts $playerWiseDetail
 	else
 		puts "India won the match by #{secondTotal - firstTotal} runs"
+		puts $playerWiseDetail
 	end
 end
 end
