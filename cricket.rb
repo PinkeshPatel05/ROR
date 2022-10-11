@@ -14,13 +14,12 @@ ballsForOthers = 12
 @playerRuns
 @striker
 @nonStriker
-# $playerWiseDetail = []
+
 @currentlyPlaying1
 @currentlyPlaying2
 @currentlyPlaying = "A"
 @p1=0
 @p2=0
-# customerArr= []
 $playerWiseDetail = []
 
 def self.played(t1,t2,noOfBalls)
@@ -46,10 +45,6 @@ def self.played(t1,t2,noOfBalls)
 		  if ball == nil
 		    puts "#{a} gets out - "  "#{outBy}"
 		    t1.delete(a)
-			# playerDetail = {
-			# 	a => @p1
-			# }
-			# $userWiseDetail.push(playerDetail)
 			saveScore(a,@p1)
 			player_out
 			check_striker(ball,balls)
@@ -86,7 +81,6 @@ def self.played(t1,t2,noOfBalls)
 			puts "Bawlling Economy is #{@bawllingEconomy}"
 		  	puts "Current Run Rate is #{runRates}" if balls % 6 == 0 
 			if(oversFinished < @totalOvers &&  @fTotal > 0)
-				# remainingOvers = @totalOvers-oversFinished
 				reqRate = @fTotal - @total
 				puts "Required run Rate is #{reqRate}"
 				
@@ -103,21 +97,15 @@ def self.calcBowlingEconomy(runs, noOfOvers)
 end
 
 def self.change_striker
-	# puts "--stiker before----#{@striker}"
-	# puts "--nonstiker before----#{@nonStriker}"
 	@striker, @nonStriker = @nonStriker, @striker
 	if @currentlyPlaying == "A"
 		@currentlyPlaying = "B"
 	else
 		@currentlyPlaying = "A"
 	end
-	# puts "--stiker after----#{@striker}"
-	# puts "--nonstiker after----#{@nonStriker}"
 end
 
 def self.check_striker(runs,balls)
-	# puts "--runs----#{runs}"
-	# puts "--balls----#{balls}"
 	if(runs==nil)
 		@currentlyPlaying = "A"
 	elsif (runs.odd?) && (balls % 6 != 0)
@@ -130,10 +118,8 @@ end
 def self.add_runs(runs)
 	if @currentlyPlaying == "A"
     	@p1 += runs
-		# puts "---p1 runs #{@p1}"
 	else 
 		@p2 += runs
-		# puts "---p2 runs #{@p2}"
 	end
 end
 
@@ -186,9 +172,7 @@ if coin.shuffle.first == 'Heads'
 	firstTotal = @total
 	@fTotal = @total
 	puts "Total runs by India #{firstTotal}"
-	# sleep 2
-	# @p1 = 0
-	# @p2 = 0
+	
 	puts "\nNow Australia will come to bat"
 	played(t2,t1,noOfBalls)
 	secondTotal = @total
@@ -206,9 +190,7 @@ else
 	@total =  @total
 	@fTotal = @total
 	puts "Total runs by Australia #{firstTotal}"
-	# sleep 2
-	# @p1 = 0
-	# @p2 = 0
+	
 	puts "\nNow India will come to bat"
 	played(t1,t2,noOfBalls)
 	secondTotal = @total
